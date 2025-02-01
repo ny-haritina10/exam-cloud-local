@@ -1,0 +1,24 @@
+- React Native APK
+    -> creation SDK
+    -> gestion version
+
+- Firebase
+    -> Creation project 
+    -> publication function (LINK)
+
+- Firebase + React Native APK
+    -> retrieve data from web-app (persisted data)
+    -> display it on the app
+    -> send data to web-app
+    -> save sended data 
+    -> send notification: 
+        -> triggered in web-app
+        -> send it to the phone app
+        -> display it in real time
+    -> send data in real time
+        -> receive and display it in real time 
+
+- Image Online Upload 
+    -> Store image in the cloud
+    -> Retrieve upload image
+    -> Change uploaded image

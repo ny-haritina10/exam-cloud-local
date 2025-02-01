@@ -1,0 +1,14 @@
+Given those tables : 
+
+CREATE TABLE crypto (
+    id SERIAL PRIMARY KEY,
+    label VARCHAR(255) NOT NULL    
+);
+
+CREATE TABLE crypto_cours (
+    id SERIAL PRIMARY KEY,
+    id_crypto INT NOT NULL REFERENCES crypto(id),
+    cours DECIMAL(10, 2) NOT NULL,
+    date_cours TIMESTAMP NOT NULL  
+);
+
