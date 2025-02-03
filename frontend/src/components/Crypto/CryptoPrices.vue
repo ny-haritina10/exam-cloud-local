@@ -77,7 +77,7 @@ export default {
   methods: {
     async fetchCryptoPrices() {
       try {
-        const response = await fetch("http://localhost:8099/api/crypto/prices");
+        const response = await fetch("http://localhost:8099/front-office/api/crypto/prices");
         if (!response.ok) {
           throw new Error(`Failed to fetch crypto prices: ${response.status}`);
         }
@@ -95,8 +95,8 @@ export default {
       this.loading = true;
       try {
         const [priceResponse, historyResponse] = await Promise.all([
-          fetch(`http://localhost:8099/api/crypto/prices/${id}`),
-          fetch(`http://localhost:8099/api/crypto/prices/${id}/history`)
+          fetch(`http://localhost:8099/front-office/api/crypto/prices/${id}`),
+          fetch(`http://localhost:8099/front-office/api/crypto/prices/${id}/history`)
         ]);
 
         if (!priceResponse.ok || !historyResponse.ok) {

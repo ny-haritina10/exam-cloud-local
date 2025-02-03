@@ -206,7 +206,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8099/api/transactions",
+					"raw": "http://localhost:8099/front-office/api/transactions",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -235,7 +235,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8099/api/crypto-transactions",
+					"raw": "http://localhost:8099/front-office/api/crypto-transactions",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -255,7 +255,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8099/api/crypto-purchase-sale",
+					"raw": "http://localhost:8099/front-office/api/crypto-purchase-sale",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -275,7 +275,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8099/api/crypto/prices/1/history",
+					"raw": "http://localhost:8099/front-office/api/crypto/prices/1/history",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -313,7 +313,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8099/api/transactions",
+					"raw": "http://localhost:8099/front-office/api/transactions",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -333,7 +333,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8099/api/crypto-transactions/all",
+					"raw": "http://localhost:8099/front-office/api/crypto-transactions/all",
 					"protocol": "http",
 					"host": [
 						"localhost"

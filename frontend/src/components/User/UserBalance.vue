@@ -117,7 +117,7 @@ export default {
       this.currentUser = await AuthService.getCurrentUser();
 
       try {
-        const response = await axios.get('http://localhost:8099/api/users/' + this.currentUser.id + '/solde');
+        const response = await axios.get('http://localhost:8099/front-office/api/users/' + this.currentUser.id + '/solde');
         
         this.balanceData = response.data;
         this.updateLastUpdated();

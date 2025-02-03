@@ -79,10 +79,7 @@
                 <router-link to="/signup" class="text-primary text-decoration-none">Sign up</router-link>
               </p>
 
-              <p class="text-center mb-0">
-                Log as an Admin ? 
-                <router-link to="/login_admin" class="text-primary text-decoration-none">Login Admin</router-link>
-              </p>
+              
             </form>
           </div>
         </div>

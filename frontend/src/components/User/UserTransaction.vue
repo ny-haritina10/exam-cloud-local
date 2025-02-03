@@ -98,7 +98,7 @@ export default {
       this.loading = true;
       this.transactions = [];
 
-      const apiUrl = `http://localhost:8099/api/transactions?dateMin=${this.dateMin}&dateMax=${this.dateMax}`;
+      const apiUrl = `http://localhost:8099/front-office/api/transactions?dateMin=${this.dateMin}&dateMax=${this.dateMax}`;
       try {
         const response = await axios.get(apiUrl);
         this.transactions = response.data;

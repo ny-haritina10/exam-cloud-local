@@ -132,7 +132,7 @@ export default {
   methods: {
     async fetchTransactions() {
       try {
-        const response = await axios.get('http://localhost:8099/api/crypto_transaction_commissions');
+        const response = await axios.get('http://localhost:8099/front-office/api/crypto_transaction_commissions');
         this.transactions = response.data;
       } catch (err) {
         this.error = 'Failed to load data. Please try again later.';
@@ -142,7 +142,7 @@ export default {
     },
     async fetchCryptos() {
       try {
-        const response = await fetch("http://localhost:8099/api/crypto-transactions/cryptos");
+        const response = await fetch("http://localhost:8099/front-office/api/crypto-transactions/cryptos");
         this.cryptos = await response.json();
       } catch (err) {
         console.error('Error fetching cryptos:', err);

@@ -122,10 +122,7 @@
                 <router-link to="/login" class="text-primary text-decoration-none">Login</router-link>
               </p>
 
-              <p class="text-center mb-0">
-                Log as an Admin ? 
-                <router-link to="/login_admin" class="text-primary text-decoration-none">Login Admin</router-link>
-              </p>
+              
             </form>
           </div>
         </div>

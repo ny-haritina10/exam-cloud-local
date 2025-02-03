@@ -78,7 +78,7 @@ export default {
   methods: {
     async fetchCommissions() {
       try {
-        const response = await axios.get('http://localhost:8099/api/commissions');
+        const response = await axios.get('http://localhost:8099/front-office/api/commissions');
         this.commissions = response.data;
       } catch (error) {
         console.error('Error fetching commissions:', error);
@@ -97,7 +97,7 @@ export default {
     async updateCommission() {
       try {
         const response = await axios.put(
-          `http://localhost:8099/api/commissions/${this.editingCommission.id}`,
+          `http://localhost:8099/front-office/api/commissions/${this.editingCommission.id}`,
           this.editingCommission
         );
 

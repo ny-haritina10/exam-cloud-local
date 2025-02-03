@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Login from '../components/Auth/Login.vue';
-import LoginAdmin from '../components/Auth/LoginAdmin.vue';
 import AuthFlow from '../components/Auth/AuthFlow.vue';
 import Dashboard from '../components/Panel/Dashboard.vue';
 import CryptoPrices from '../components/Crypto/CryptoPrices.vue';
@@ -16,7 +15,6 @@ import TransactionCommissionList from '../components/Commission/TransactionCommi
 const routes = [
   { path: '/', component: AuthFlow },
   { path: '/login', component: Login },
-  { path: '/login_admin', component: LoginAdmin },
   { path: '/signup', component: AuthFlow },
   {
     path: '/dashboard',

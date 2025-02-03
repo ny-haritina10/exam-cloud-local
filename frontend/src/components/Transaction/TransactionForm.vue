@@ -109,7 +109,7 @@ export default {
           dateTransaction: this.dateTransaction
         };
 
-        const response = await axios.post('http://localhost:8099/api/transactions', payload);
+        const response = await axios.post('http://localhost:8099/front-office/api/transactions', payload);
         console.log('Transaction response: ', response);
 
         this.response = {

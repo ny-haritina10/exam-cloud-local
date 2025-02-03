@@ -110,7 +110,7 @@ export default {
       // Fetch data for each selected crypto
       for (const cryptoId of this.selectedCryptos) {
         const response = await fetch(
-          `http://localhost:8099/api/crypto/prices/${cryptoId}/history`
+          `http://localhost:8099/front-office/api/crypto/prices/${cryptoId}/history`
         );
         if (response.ok) {
           const data = await response.json();
@@ -127,7 +127,7 @@ export default {
       }
     },
     async fetchCryptos() {
-      const response = await fetch("http://localhost:8099/api/crypto-transactions/cryptos");
+      const response = await fetch("http://localhost:8099/front-office/api/crypto-transactions/cryptos");
       this.cryptos = await response.json();
     },
     calculateQuartile1(data) {

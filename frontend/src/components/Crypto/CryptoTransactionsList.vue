@@ -128,7 +128,7 @@ export default {
       this.error = null;
 
       try {
-        const response = await axios.get('http://localhost:8099/api/crypto-transactions/all');
+        const response = await axios.get('http://localhost:8099/front-office/api/crypto-transactions/all');
         this.transactions = response.data;
       } catch (error) {
         this.error = 'Failed to load transactions. Please try again later.';

@@ -187,9 +187,9 @@ export default {
         this.cryptoError = null;
 
         try {
-            let endpoint = 'http://localhost:8099/api/crypto-transactions/cryptos';
+            let endpoint = 'http://localhost:8099/front-office/api/crypto-transactions/cryptos';
             if (this.transactionType === 'sale' && this.currentUser) {
-                endpoint = `http://localhost:8099/api/crypto-transactions/user-holdings/${this.currentUser.id}`;
+                endpoint = `http://localhost:8099/front-office/api/crypto-transactions/user-holdings/${this.currentUser.id}`;
             }
 
             const response = await axios.get(endpoint);
@@ -210,7 +210,7 @@ export default {
         this.formData.userId = this.currentUser.id;
 
         const response = await axios.post(
-          'http://localhost:8099/api/crypto-transactions',
+          'http://localhost:8099/front-office/api/crypto-transactions',
           this.formData
         );
 
