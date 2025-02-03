@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/front-office/api/users")
 @CrossOrigin(origins = "*")  
 public class UserController {
 

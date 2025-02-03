@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/crypto/prices")
+@RequestMapping("/front-office/api/crypto/prices")
 @CrossOrigin(origins = "*")
 @Tag(name = "Crypto Prices", description = "Endpoints for managing cryptocurrency prices and history")
 public class CryptoCoursController {

@@ -23,7 +23,7 @@ public class EmailService {
             helper.setTo(toEmail);
             helper.setSubject("Validate Your Transaction");
 
-            String validationLink = baseUrl + "/api/transactions/validate?token=" + validationToken + "&transactionId=" + transactionId;
+            String validationLink = baseUrl + "/front-office/api/transactions/validate?token=" + validationToken + "&transactionId=" + transactionId;
 
             String emailContent = """
                 <html>

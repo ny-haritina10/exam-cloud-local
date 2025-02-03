@@ -9,7 +9,7 @@ import mg.itu.model.Transaction;
 import mg.itu.dto.ApiResponse;
 
 @RestController
-@RequestMapping("/api/transactions")
+@RequestMapping("/front-office/api/transactions")
 @CrossOrigin(origins = "*")  
 public class TransactionController {
 

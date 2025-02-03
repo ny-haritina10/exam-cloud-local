@@ -20,7 +20,7 @@ public class UserTransactionController {
         this.service = service;
     }
 
-    @GetMapping("/api/transactions")
+    @GetMapping("/front-office/api/transactions")
     public List<Map<String, Object>> getTransactions(
         @RequestParam String dateMin,
         @RequestParam String dateMax

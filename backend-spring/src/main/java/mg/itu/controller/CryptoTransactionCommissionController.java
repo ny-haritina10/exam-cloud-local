@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/crypto_transaction_commissions")
+@RequestMapping("/front-office/api/crypto_transaction_commissions")
 @CrossOrigin(origins = "*")
 public class CryptoTransactionCommissionController {
 
