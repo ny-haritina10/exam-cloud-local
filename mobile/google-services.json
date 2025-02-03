@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "126582347980",
+    "project_id": "cloudexam-cce68",
+    "storage_bucket": "cloudexam-cce68.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:126582347980:android:ca211c2104b0f19a90ca69",
+        "android_client_info": {
+          "package_name": "com.hentsa.MOBILECLOUD"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBEb9dalOe3ZcoNN-UZOGEdiW_3k6F1PsQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:126582347980:android:5582539e70cf2ce590ca69",
+        "android_client_info": {
+          "package_name": "com.junior28.MOBLETYPESCRIPT"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBEb9dalOe3ZcoNN-UZOGEdiW_3k6F1PsQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
