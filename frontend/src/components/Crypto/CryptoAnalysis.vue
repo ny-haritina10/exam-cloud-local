@@ -1,14 +1,21 @@
 <template>
-  <div class="container mt-5">
-    <h1 class="mb-4">Crypto Price Analysis</h1>
+  <div class="container py-4">
+    <div class="card shadow">
+      <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">
+          <i class="fas fa-chart-line me-2"></i>
+          Crypto Price Analysis
+        </h4>
+        <button @click="fetchAndAnalyze" class="btn btn-light btn-sm">
+          <i class="fas fa-sync-alt me-1"></i>
+          Refresh
+        </button>
+      </div>
 
-    <!-- Filter Form -->
-    <div class="card mb-4">
       <div class="card-body">
-        <h5 class="card-title">Filters</h5>
-        <div class="row">
-          <!-- Analysis Type Dropdown -->
-          <div class="col-md-4 mb-3">
+        <!-- Filters -->
+        <div class="row mb-4">
+          <div class="col-md-4">
             <label for="analysisType" class="form-label">Analysis Type</label>
             <select id="analysisType" class="form-select" v-model="selectedAnalysis">
               <option value="quartile1">1er Quartile</option>
@@ -17,81 +24,61 @@
               <option value="ecartType">Écart-Type</option>
             </select>
           </div>
-
-          <!-- Date Range Filter -->
-          <div class="col-md-4 mb-3">
+          <div class="col-md-4">
             <label for="startDate" class="form-label">Start Date</label>
-            <input
-              type="datetime-local"
-              id="startDate"
-              class="form-control"
-              v-model="startDate"
-            />
+            <input type="datetime-local" id="startDate" class="form-control" v-model="startDate" />
           </div>
-          <div class="col-md-4 mb-3">
+          <div class="col-md-4">
             <label for="endDate" class="form-label">End Date</label>
-            <input
-              type="datetime-local"
-              id="endDate"
-              class="form-control"
-              v-model="endDate"
-            />
+            <input type="datetime-local" id="endDate" class="form-control" v-model="endDate" />
           </div>
         </div>
 
-        <!-- Crypto Filter Checkboxes -->
-        <div class="row">
-          <div class="col-md-12">
+        <!-- Crypto Selection -->
+        <div class="row mb-3">
+          <div class="col-12">
             <label class="form-label">Filter by Cryptos</label>
-            <div class="row">
-              <div
-                v-for="crypto in cryptos"
-                :key="crypto.id"
-                class="col-md-3 mb-2"
-              >
-                <div class="form-check">
-                  <input
-                    type="checkbox"
-                    class="form-check-input"
-                    :id="'crypto' + crypto.id"
-                    :value="crypto.id"
-                    v-model="selectedCryptos"
-                  />
-                  <label class="form-check-label" :for="'crypto' + crypto.id">
-                    {{ crypto.label }}
-                  </label>
-                </div>
+            <div class="d-flex flex-wrap">
+              <div v-for="crypto in cryptos" :key="crypto.id" class="form-check me-3">
+                <input type="checkbox" class="form-check-input" :id="'crypto' + crypto.id" :value="crypto.id" v-model="selectedCryptos" />
+                <label class="form-check-label" :for="'crypto' + crypto.id">{{ crypto.label }}</label>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Analyse and Select All Buttons -->
+        <!-- Action Buttons -->
         <div class="text-center mt-4">
-          <button class="btn btn-primary" @click="fetchAndAnalyze">
-            Analyse
+          <button class="btn btn-primary me-2" @click="fetchAndAnalyze">
+            <i class="fas fa-play me-1"></i> Analyze
           </button>
-          <button class="btn btn-secondary ms-2" @click="toggleSelectAll">
-            {{ selectAllButtonText }}
+          <button class="btn btn-secondary" @click="toggleSelectAll">
+            <i class="fas fa-check-double me-1"></i> {{ selectAllButtonText }}
           </button>
         </div>
       </div>
-    </div>
 
-    <!-- Display Results -->
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Analysis Results</h5>
-        <div v-if="analysisResults.length > 0">
-          <div
-            v-for="result in analysisResults"
-            :key="result.cryptoId"
-            class="mb-3"
-          >
-            <strong>{{ result.cryptoLabel }}</strong>: {{ result.value }}
-          </div>
+      <!-- Analysis Results -->
+      <div class="card-footer">
+        <div v-if="analysisResults.length" class="table-responsive">
+          <table class="table table-bordered">
+            <thead class="table-light">
+              <tr>
+                <th>Crypto</th>
+                <th>Result</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="result in analysisResults" :key="result.cryptoId">
+                <td>{{ result.cryptoLabel }}</td>
+                <td>{{ result.value }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <p v-else class="text-muted">No results to display. Select cryptos and click "Analyse".</p>
+        <div v-else class="text-center text-muted py-3">
+          <i class="fas fa-info-circle me-1"></i> No results to display. Select cryptos and click "Analyze".
+        </div>
       </div>
     </div>
   </div>
@@ -237,16 +224,18 @@ export default {
 </script>
 
 <style scoped>
-.card {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.container {
+  padding: 20px;
 }
-.card-title {
-  font-size: 1.25rem;
+.card {
+  border-radius: 10px;
+}
+.card-header {
+  font-size: 18px;
   font-weight: bold;
 }
-.form-label {
-  font-weight: 500;
+.table th,
+.table td {
+  text-align: center;
 }
 </style>

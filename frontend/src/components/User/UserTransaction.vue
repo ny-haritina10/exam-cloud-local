@@ -1,63 +1,81 @@
 <template>
-  <div class="transaction-report-container">
-    <h2>Transaction Report</h2>
-    
-    <!-- Date Range Filter -->
-    <div class="filter-container">
-      <div>
-        <label for="dateMin">Start Date</label>
-        <input type="date" id="dateMin" v-model="dateMin" />
-      </div>
-      <div>
-        <label for="dateMax">End Date</label>
-        <input type="date" id="dateMax" v-model="dateMax" />
-      </div>
-      <div>
-        <button 
-          @click="fetchTransactions" 
-          :disabled="loading" 
-          class="btn-primary"
-        >
-          <span v-if="!loading">Filter</span>
-          <span v-else class="loading-spinner">Loading...</span>
+  <div class="container">
+    <div class="card shadow">
+      <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">
+          <i class="fas fa-file-invoice-dollar me-2"></i>
+          Transaction Report
+        </h4>
+        <button @click="fetchTransactions" class="btn btn-light btn-sm" :disabled="loading">
+          <i class="fas fa-sync-alt me-1" :class="{ 'fa-spin': loading }"></i>
+          Refresh
         </button>
       </div>
-    </div>
+      
+      <div class="card-body">
+        <!-- Filters -->
+        <div class="row mb-4">
+          <div class="col-md-5">
+            <label for="dateMin" class="form-label">Start Date</label>
+            <input type="date" id="dateMin" class="form-control" v-model="dateMin" />
+          </div>
+          <div class="col-md-5">
+            <label for="dateMax" class="form-label">End Date</label>
+            <input type="date" id="dateMax" class="form-control" v-model="dateMax" />
+          </div>
+          <div class="col-md-2 d-flex align-items-end">
+            <button @click="fetchTransactions" class="btn btn-primary w-100" :disabled="loading">
+              <i class="fas fa-filter me-1"></i> Filter
+            </button>
+          </div>
+        </div>
+        
+        <!-- Loading State -->
+        <div v-if="loading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="text-muted mt-2">Fetching transactions...</p>
+        </div>
 
-    <!-- Transaction Table -->
-    <div v-if="transactions.length" class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>User ID</th>
-            <th>User Name</th>
-            <th>Total Purchase</th>
-            <th>Total Sale</th>
-            <th>Total Amount</th>
-            <th>Total Crypto Quantity</th>
-            <th>Total Crypto Value</th>
-            <th>First Transaction</th>
-            <th>Last Transaction</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="transaction in transactions" :key="transaction.user_id">
-            <td>{{ transaction.user_id }}</td>
-            <td>{{ transaction.user_name }}</td>
-            <td>{{ formatCurrency(transaction.total_achat) }}</td>
-            <td>{{ formatCurrency(transaction.total_vente) }}</td>
-            <td>{{ formatCurrency(transaction.total_amount) }}</td>
-            <td>{{ transaction.total_crypto_quantity }}</td>
-            <td>{{ formatCurrency(transaction.total_crypto_value) }}</td>
-            <td>{{ formatDateTime(transaction.datetime_min) }}</td>
-            <td>{{ formatDateTime(transaction.datetime_max) }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    
-    <div v-else-if="!loading" class="alert-warning">
-      No transactions found for the selected date range.
+        <!-- No Data State -->
+        <div v-else-if="!transactions.length" class="text-center py-5">
+          <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+          <p class="text-muted">No transactions found for the selected date range.</p>
+        </div>
+
+        <!-- Transactions Table -->
+        <div v-else class="table-responsive">
+          <table class="table table-hover">
+            <thead class="table-light">
+              <tr>
+                <th>User ID</th>
+                <th>User Name</th>
+                <th>Total Purchase</th>
+                <th>Total Sale</th>
+                <th>Total Amount</th>
+                <th>Total Crypto Quantity</th>
+                <th>Total Crypto Value</th>
+                <th>First Transaction</th>
+                <th>Last Transaction</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="transaction in transactions" :key="transaction.user_id">
+                <td>{{ transaction.user_id }}</td>
+                <td>{{ transaction.user_name }}</td>
+                <td>{{ formatCurrency(transaction.total_achat) }}</td>
+                <td>{{ formatCurrency(transaction.total_vente) }}</td>
+                <td>{{ formatCurrency(transaction.total_amount) }}</td>
+                <td>{{ transaction.total_crypto_quantity }}</td>
+                <td>{{ formatCurrency(transaction.total_crypto_value) }}</td>
+                <td>{{ formatDateTime(transaction.datetime_min) }}</td>
+                <td>{{ formatDateTime(transaction.datetime_max) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -109,77 +127,33 @@ export default {
 </script>
 
 <style scoped>
-.transaction-report-container {
+.container {
   padding: 20px;
-  font-family: Arial, sans-serif;
 }
 
-.filter-container {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+.card {
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-.filter-container > div {
-  display: flex;
-  flex-direction: column;
-}
-
-input[type="date"] {
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.btn-primary {
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.btn-primary:disabled {
-  background-color: #6c757d;
-  cursor: not-allowed;
-}
-
-.loading-spinner {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.table-container {
-  margin-top: 20px;
-  overflow-x: auto;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-}
-
-table th,
-table td {
-  text-align: center;
-  padding: 10px;
-  border: 1px solid #ddd;
-}
-
-table th {
-  background-color: #f4f4f4;
+.card-header {
+  font-size: 18px;
   font-weight: bold;
 }
 
-.alert-warning {
-  color: #856404;
-  background-color: #fff3cd;
-  padding: 10px;
-  border-radius: 4px;
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary i {
+  margin-right: 5px;
+}
+
+.table th,
+.table td {
   text-align: center;
+  vertical-align: middle;
 }
 </style>

@@ -30,7 +30,7 @@ public class CryptoPriceService {
     private final Random random = new Random();
     private final AtomicBoolean isGenerating = new AtomicBoolean(false);
 
-    private static final BigDecimal MIN_PRICE = BigDecimal.valueOf(1000);
+    private static final BigDecimal MIN_PRICE = BigDecimal.valueOf(10000);
     private static final BigDecimal MAX_PRICE = BigDecimal.valueOf(100000);
 
     @PostConstruct

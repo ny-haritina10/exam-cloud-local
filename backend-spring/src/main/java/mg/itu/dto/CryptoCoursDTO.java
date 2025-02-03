@@ -1,15 +1,16 @@
- package mg.itu.dto;
+package mg.itu.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class CryptoCoursDTO {
+
     private Long cryptoId;
     private String cryptoLabel;
     private BigDecimal currentPrice;
     private LocalDateTime lastUpdate;
-    private BigDecimal priceChange;  // Latest price change
-    private BigDecimal percentageChange;  // Latest percentage change
+    private BigDecimal priceChange;  
+    private BigDecimal percentageChange;  
 
     // Constructors
     public CryptoCoursDTO() {}
