@@ -78,7 +78,6 @@
       </div>
     </div>
   </template>
-  
   <script>
   import axios from 'axios';
   
@@ -116,14 +115,16 @@
           });
   
           if (response.data.status === 'success') {
+            // Sauvegarde du token et de l'expiration dans le localStorage
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('tokenExpiration', response.data.expires_at);
   
-            this.$router.push('/dashboard');
+            // Redirection vers le dashboard
+            this.$router.push({ name: 'dashboard' });
           }
         } catch (error) {
           this.status = 'danger';
-          
+  
           if (error.response?.data?.errors) {
             this.errors = error.response.data.errors;
             this.message = 'Please correct the errors below.';
@@ -137,6 +138,7 @@
     }
   };
   </script>
+  
   
   <style scoped>
   .card {
