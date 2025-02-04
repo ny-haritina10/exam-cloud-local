@@ -301,3 +301,17 @@ JOIN users u
 ON ct.id_user = u.id
 JOIN crypto cr 
 ON ct.id_crypto = cr.id;
+
+
+--
+--
+--
+-- Remove the email validation columns
+ALTER TABLE transactions 
+DROP COLUMN validation_token, 
+DROP COLUMN validation_token_expires_at, 
+DROP COLUMN is_validated;
+
+-- Add the new column for admin approval
+ALTER TABLE transactions 
+ADD COLUMN approved_by_admin BOOLEAN DEFAULT FALSE;

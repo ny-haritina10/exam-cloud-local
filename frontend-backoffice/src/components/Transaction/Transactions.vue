@@ -74,6 +74,7 @@ export default {
       loading: true,
       error: null,
       adminId: 1 
+      error: null
     };
   },
   methods: {
