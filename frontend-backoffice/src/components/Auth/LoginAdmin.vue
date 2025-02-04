@@ -113,13 +113,13 @@
           const response = await axios.post('http://127.0.0.1:8000/api/auth/admin/login', this.formData, {
             headers: { 'Content-Type': 'application/json' }
           });
-  
+          
+          console.log(response);
           if (response.data.status === 'success') {
-            // Sauvegarde du token et de l'expiration dans le localStorage
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('tokenExpiration', response.data.expires_at);
+            localStorage.setItem('id_admin', response.data.id_admin);
   
-            // Redirection vers le dashboard
             this.$router.push({ name: 'dashboard' });
           }
         } catch (error) {

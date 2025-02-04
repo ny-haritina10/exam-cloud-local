@@ -22,7 +22,7 @@
     <hr />
     <div class="dropdown">
       <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none" data-bs-toggle="dropdown">
-        <i class="fas fa-user me-2"></i> <br>
+        <i class="fas fa-user me-2"></i> 
         <strong>Admin</strong>
       </a>
       <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
@@ -35,6 +35,9 @@
 <style scoped>
 .nav-link {
   transition: background-color 0.3s ease;
+  display: flex; 
+  align-items: center;  
+  gap: 5px;
 }
 
 .nav-link:hover {
@@ -51,5 +54,10 @@
 
 .nav-link.active {
   background-color: #17a2b8;
+}
+
+/* Additional styles for dropdown items */
+.dropdown-menu {
+  left: auto; /* Align dropdown menu */
 }
 </style>

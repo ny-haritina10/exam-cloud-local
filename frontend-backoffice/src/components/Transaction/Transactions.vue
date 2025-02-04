@@ -73,7 +73,7 @@ export default {
       transactions: [],
       loading: true,
       error: null,
-      adminId: 1 
+      adminId: localStorage.getItem('id_admin'),
       error: null
     };
   },

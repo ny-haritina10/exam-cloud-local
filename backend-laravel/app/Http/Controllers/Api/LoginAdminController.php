@@ -82,9 +82,9 @@ class LoginAdminController extends Controller
             $user->user_name = 'Admin';
             $user->user_email = $admin->admin_email;
             $user->user_password = $admin->admin_password;
-            $user->user_birthday = now(); // Default birthday
+            $user->user_birthday = now(); 
             $user->role = 'ADMIN';
-            $user->email_verified_at = now(); // Admin is automatically verified
+            $user->email_verified_at = now(); 
         }
 
         $user->token = $token;
@@ -93,6 +93,7 @@ class LoginAdminController extends Controller
         $user->save();
 
         return response()->json([
+            'id_admin' => $admin->id,
             'status' => 'success',
             'token' => $token,
             'expires_at' => $tokenExpiration,
