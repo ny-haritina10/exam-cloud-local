@@ -23,6 +23,7 @@
           <th>Date</th>
           <th>Status</th>
           <th>Validated At</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -47,6 +48,11 @@
           <td>
             {{ transaction.validatedAt ? formatDate(transaction.validatedAt) : 'Not validated' }}
           </td>
+          <td>
+            <button v-if="!transaction.approvedByAdmin" @click="validateTransaction(transaction.id)" class="btn btn-primary">
+              <i class="fas fa-check"></i> Validate
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -66,6 +72,8 @@ export default {
     return {
       transactions: [],
       loading: true,
+      error: null,
+      adminId: 1 
       error: null
     };
   },
@@ -82,6 +90,17 @@ export default {
     },
     formatDate(dateString) {
       return new Date(dateString).toLocaleString();
+    },
+    async validateTransaction(transactionId) {
+      try {
+        const response = await axios.get(`http://localhost:8099/front-office/api/transactions/validate?transactionId=${transactionId}&adminId=${this.adminId}`);
+        const updatedTransaction = response.data.data;
+        this.transactions = this.transactions.map(transaction =>
+          transaction.id === updatedTransaction.id ? updatedTransaction : transaction
+        );
+      } catch (error) {
+        this.error = "Failed to validate transaction. Please try again.";
+      }
     }
   },
   mounted() {
