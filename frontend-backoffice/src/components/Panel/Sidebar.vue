@@ -17,6 +17,11 @@
           <i class="fas fa-wallet"></i> Transactions
         </router-link>
       </li>
+      <li class="nav-item">
+        <router-link to="/dashboard/user_operations" class="nav-link" exact-active-class="active">
+          <i class="fas fa-history"></i> User operations
+        </router-link>
+      </li>
     </ul>
 
     <hr />
