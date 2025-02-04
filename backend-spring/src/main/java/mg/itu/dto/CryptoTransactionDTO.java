@@ -5,15 +5,17 @@ import java.time.LocalDateTime;
 public class CryptoTransactionDTO {
     
     private Long userId;
+    private String userName;
     private String cryptoLabel;
     private Double quantity;
     private Boolean isSale;
     private Boolean isPurchase;
     private LocalDateTime dateTransaction;
 
-    public CryptoTransactionDTO(Long userId, String cryptoLabel, Double quantity, Boolean isSale, Boolean isPurchase, LocalDateTime dateTransaction) 
+    public CryptoTransactionDTO(Long userId, String userName, String cryptoLabel, Double quantity, Boolean isSale, Boolean isPurchase, LocalDateTime dateTransaction) 
     {
         this.userId = userId;
+        this.userName = userName;
         this.cryptoLabel = cryptoLabel;
         this.quantity = quantity;
         this.isSale = isSale;
@@ -68,5 +70,13 @@ public class CryptoTransactionDTO {
 
     public void setDateTransaction(LocalDateTime dateTransaction) {
         this.dateTransaction = dateTransaction;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }
