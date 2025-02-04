@@ -30,17 +30,11 @@ public class Transaction {
     @Column(name = "date_transaction", nullable = false)
     private LocalDateTime dateTransaction;
 
-    @Column(name = "validation_token")
-    private String validationToken;
-
-    @Column(name = "validation_token_expires_at")
-    private LocalDateTime validationTokenExpiresAt;
+    @Column(name = "approved_by_admin")
+    private boolean approvedByAdmin = false;
 
     @Column(name = "validated_at")
     private LocalDateTime validatedAt;
-
-    @Column(name = "is_validated")
-    private boolean isValidated = false;
 
     // Getters and Setters
     public Long getId() 
@@ -73,22 +67,6 @@ public class Transaction {
     public void setDateTransaction(LocalDateTime dateTransaction) 
     { this.dateTransaction = dateTransaction; }
 
-    public String getValidationToken() {
-        return validationToken;
-    }
-
-    public void setValidationToken(String validationToken) {
-        this.validationToken = validationToken;
-    }
-
-    public LocalDateTime getValidationTokenExpiresAt() {
-        return validationTokenExpiresAt;
-    }
-
-    public void setValidationTokenExpiresAt(LocalDateTime validationTokenExpiresAt) {
-        this.validationTokenExpiresAt = validationTokenExpiresAt;
-    }
-
     public LocalDateTime getValidatedAt() {
         return validatedAt;
     }
@@ -97,11 +75,11 @@ public class Transaction {
         this.validatedAt = validatedAt;
     }
 
-    public boolean isValidated() {
-        return isValidated;
+    public boolean isApprovedByAdmin() {
+        return approvedByAdmin;
     }
 
-    public void setValidated(boolean validated) {
-        isValidated = validated;
+    public void setApprovedByAdmin(boolean approvedByAdmin) {
+        this.approvedByAdmin = approvedByAdmin;
     }
 }
