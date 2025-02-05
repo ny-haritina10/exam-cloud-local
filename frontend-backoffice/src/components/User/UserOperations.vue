@@ -63,7 +63,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(transaction, index) in filteredTransactions" :key="index">
+              <tr v-for="(transaction, index) in filteredTransactions" :key="index" @click="filterByUser(transaction.userName)">
                 <td>{{ transaction.userId }}</td>
                 <td>{{ transaction.userName }}</td>
                 <td><span class="fw-medium">{{ transaction.cryptoLabel }}</span></td>
@@ -151,6 +151,10 @@ export default {
         );
       });
     },
+    filterByUser(userName) {
+      this.selectedUser = userName;
+      this.applyFilters();
+    },
     refreshTransactions() {
       this.fetchTransactions();
     }
@@ -177,6 +181,7 @@ export default {
 .table td {
   text-align: center;
   vertical-align: middle;
+  cursor: pointer;
 }
 
 /* Filters */
