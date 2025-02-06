@@ -13,7 +13,7 @@ export default {
 <style>
 /* Global styles */
 #app {
-  font-family: Arial, sans-serif;
+  font-family: "Titillium Web", sans-serif;
   text-align: center;
 }
 

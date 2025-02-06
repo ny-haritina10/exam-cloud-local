@@ -2,7 +2,7 @@
   <div class="sidebar text-white" :class="{ 'collapsed': isSidebarCollapsed }">
     <div class="sidebar-header p-3 border-bottom">
       <h4 class="mb-0 d-flex align-items-center">
-        <i class="fas fa-chart-line"></i>
+        <i class="fas fa-coins me-2"></i>
         <span v-if="!isSidebarCollapsed" class="ms-2">Front-Office</span>
       </h4>
     </div>
@@ -137,5 +137,20 @@ export default {
 .collapse-button:hover .icon-container {
   background: rgba(255, 255, 255, 0.2);
   transform: scale(1.1);
+}
+
+.sidebar {
+  width: 300px;
+  height: 100vh; /* Set the height to full viewport */
+  transition: width 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  overflow-y: auto; /* Enable scrolling */
+  overflow-x: hidden; /* Hide horizontal scrollbar */
+}
+
+.sidebar.collapsed {
+  width: 70px;
 }
 </style>

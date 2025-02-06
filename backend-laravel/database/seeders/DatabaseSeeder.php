@@ -147,26 +147,26 @@ class DatabaseSeeder extends Seeder
 
         // Insert crypto transactions
         DB::table('crypto_transactions')->insert([
-            ['id_user' => 1, 'id_crypto' => 1, 'is_sale' => false, 'is_purchase' => true, 'quantity' => 0.5, 'date_transaction' => '2025-01-07 10:00:00'],
-            ['id_user' => 2, 'id_crypto' => 2, 'is_sale' => true, 'is_purchase' => false, 'quantity' => 1.0, 'date_transaction' => '2025-01-08 11:15:00'],
+            ['id_user' => 1, 'id_crypto' => 1, 'is_sale' => false, 'is_purchase' => true, 'quantity' => 3, 'date_transaction' => '2025-01-07 10:00:00'],
+            ['id_user' => 2, 'id_crypto' => 2, 'is_sale' => true, 'is_purchase' => false, 'quantity' => 1, 'date_transaction' => '2025-01-08 11:15:00'],
             ['id_user' => 3, 'id_crypto' => 3, 'is_sale' => false, 'is_purchase' => true, 'quantity' => 10.0, 'date_transaction' => '2025-01-09 12:30:00'],
-            ['id_user' => 4, 'id_crypto' => 4, 'is_sale' => true, 'is_purchase' => false, 'quantity' => 2.5, 'date_transaction' => '2025-01-09 13:45:00'],
+            ['id_user' => 4, 'id_crypto' => 4, 'is_sale' => true, 'is_purchase' => false, 'quantity' => 2, 'date_transaction' => '2025-01-09 13:45:00'],
             ['id_user' => 5, 'id_crypto' => 5, 'is_sale' => false, 'is_purchase' => true, 'quantity' => 15.0, 'date_transaction' => '2025-01-09 14:00:00'],
-            ['id_user' => 6, 'id_crypto' => 6, 'is_sale' => true, 'is_purchase' => false, 'quantity' => 0.8, 'date_transaction' => '2025-01-08 15:10:00'],
-            ['id_user' => 7, 'id_crypto' => 7, 'is_sale' => false, 'is_purchase' => true, 'quantity' => 3.2, 'date_transaction' => '2025-01-07 16:20:00'],
+            ['id_user' => 6, 'id_crypto' => 6, 'is_sale' => true, 'is_purchase' => false, 'quantity' => 8, 'date_transaction' => '2025-01-08 15:10:00'],
+            ['id_user' => 7, 'id_crypto' => 7, 'is_sale' => false, 'is_purchase' => true, 'quantity' => 2, 'date_transaction' => '2025-01-07 16:20:00'],
             ['id_user' => 8, 'id_crypto' => 8, 'is_sale' => true, 'is_purchase' => false, 'quantity' => 4.0, 'date_transaction' => '2025-01-08 17:30:00'],
-            ['id_user' => 9, 'id_crypto' => 9, 'is_sale' => false, 'is_purchase' => true, 'quantity' => 1.5, 'date_transaction' => '2025-01-07 18:40:00'],
-            ['id_user' => 10, 'id_crypto' => 10, 'is_sale' => true, 'is_purchase' => false, 'quantity' => 0.6, 'date_transaction' => '2025-01-09 19:50:00'],
+            ['id_user' => 9, 'id_crypto' => 9, 'is_sale' => false, 'is_purchase' => true, 'quantity' => 13, 'date_transaction' => '2025-01-07 18:40:00'],
+            ['id_user' => 10, 'id_crypto' => 10, 'is_sale' => true, 'is_purchase' => false, 'quantity' => 6, 'date_transaction' => '2025-01-09 19:50:00'],
             ['id_user' => 1, 'id_crypto' => 2, 'is_sale' => false, 'is_purchase' => true, 'quantity' => 2.0, 'date_transaction' => '2025-01-08 20:05:00'],
-            ['id_user' => 2, 'id_crypto' => 3, 'is_sale' => true, 'is_purchase' => false, 'quantity' => 1.2, 'date_transaction' => '2025-01-09 21:15:00'],
-            ['id_user' => 3, 'id_crypto' => 4, 'is_sale' => false, 'is_purchase' => true, 'quantity' => 7.0, 'date_transaction' => '2025-01-07 22:25:00'],
-            ['id_user' => 4, 'id_crypto' => 5, 'is_sale' => true, 'is_purchase' => false, 'quantity' => 3.0, 'date_transaction' => '2025-01-09 23:35:00'],
-            ['id_user' => 5, 'id_crypto' => 6, 'is_sale' => false, 'is_purchase' => true, 'quantity' => 4.5, 'date_transaction' => '2025-01-08 09:45:00'],
-            ['id_user' => 6, 'id_crypto' => 7, 'is_sale' => true, 'is_purchase' => false, 'quantity' => 2.8, 'date_transaction' => '2025-01-09 10:55:00'],
-            ['id_user' => 7, 'id_crypto' => 8, 'is_sale' => false, 'is_purchase' => true, 'quantity' => 1.1, 'date_transaction' => '2025-01-08 11:05:00'],
-            ['id_user' => 8, 'id_crypto' => 9, 'is_sale' => true, 'is_purchase' => false, 'quantity' => 0.9, 'date_transaction' => '2025-01-09 12:15:00'],
-            ['id_user' => 9, 'id_crypto' => 10, 'is_sale' => false, 'is_purchase' => true, 'quantity' => 3.3, 'date_transaction' => '2025-01-07 13:25:00'],
-            ['id_user' => 10, 'id_crypto' => 1, 'is_sale' => true, 'is_purchase' => false, 'quantity' => 0.7, 'date_transaction' => '2025-01-08 14:35:00']
+            ['id_user' => 2, 'id_crypto' => 3, 'is_sale' => true, 'is_purchase' => false, 'quantity' => 21, 'date_transaction' => '2025-01-09 21:15:00'],
+            ['id_user' => 3, 'id_crypto' => 4, 'is_sale' => false, 'is_purchase' => true, 'quantity' => 7, 'date_transaction' => '2025-01-07 22:25:00'],
+            ['id_user' => 4, 'id_crypto' => 5, 'is_sale' => true, 'is_purchase' => false, 'quantity' => 30, 'date_transaction' => '2025-01-09 23:35:00'],
+            ['id_user' => 5, 'id_crypto' => 6, 'is_sale' => false, 'is_purchase' => true, 'quantity' => 45, 'date_transaction' => '2025-01-08 09:45:00'],
+            ['id_user' => 6, 'id_crypto' => 7, 'is_sale' => true, 'is_purchase' => false, 'quantity' => 2, 'date_transaction' => '2025-01-09 10:55:00'],
+            ['id_user' => 7, 'id_crypto' => 8, 'is_sale' => false, 'is_purchase' => true, 'quantity' => 11, 'date_transaction' => '2025-01-08 11:05:00'],
+            ['id_user' => 8, 'id_crypto' => 9, 'is_sale' => true, 'is_purchase' => false, 'quantity' => 9, 'date_transaction' => '2025-01-09 12:15:00'],
+            ['id_user' => 9, 'id_crypto' => 10, 'is_sale' => false, 'is_purchase' => true, 'quantity' => 33, 'date_transaction' => '2025-01-07 13:25:00'],
+            ['id_user' => 10, 'id_crypto' => 1, 'is_sale' => true, 'is_purchase' => false, 'quantity' => 7, 'date_transaction' => '2025-01-08 14:35:00']
         ]);
     }
 }
