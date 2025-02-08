@@ -315,3 +315,28 @@ DROP COLUMN is_validated;
 -- Add the new column for admin approval
 ALTER TABLE transactions 
 ADD COLUMN approved_by_admin BOOLEAN DEFAULT FALSE;
+
+
+--
+--
+--
+CREATE TABLE favori (
+    id SERIAL PRIMARY KEY,
+    id_user INT NOT NULL REFERENCES users(id),
+    id_crypto INT NOT NULL REFERENCES crypto(id)
+);
+
+
+ALTER TABLE public.transactions 
+ALTER COLUMN date_transaction SET DEFAULT NOW();
+
+--
+--
+--
+ALTER TABLE users ADD COLUMN fcm_token TEXT;
+
+--
+--
+--
+ALTER TABLE transactions ADD COLUMN notification_sent BOOLEAN;
+ALTER TABLE transactions ADD COLUMN notification_seen BOOLEAN;

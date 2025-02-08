@@ -30,9 +30,6 @@
         <i class="fas fa-user me-2"></i> 
         <strong>Admin</strong>
       </a>
-      <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-        <li><a class="dropdown-item" href="#">Déconnexion</a></li>
-      </ul>
     </div>
   </div>
 </template>

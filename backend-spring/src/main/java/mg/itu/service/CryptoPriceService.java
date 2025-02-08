@@ -39,7 +39,7 @@ public class CryptoPriceService {
         startPriceGeneration();
     }
 
-    @Scheduled(fixedRate = 30000) // Runs every 30 seconds
+    @Scheduled(fixedRate = 60000) // Runs every 30 seconds
     @Transactional
     public void generateNewPrices() {
         if (!isGenerating.get()) {

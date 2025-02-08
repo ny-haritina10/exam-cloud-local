@@ -1,6 +1,7 @@
 const { initializeApp } = require('firebase/app');
-const { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc } = require('firebase/firestore');
+const { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc, updateDoc, getDocs, writeBatch } = require('firebase/firestore'); // Added writeBatch
 const { Pool } = require('pg');
+
 const firebaseConfig = require('./config/firebase.config');
 const postgresConfig = require('./config/postgres.config');
 
@@ -33,7 +34,7 @@ async function getPrimaryKeyColumn(tableName) {
   }
 }
 
-async function syncCollectionToPostgres(firestoreCollectionName, tableName,fields)  {
+async function syncCollectionToPostgres(firestoreCollectionName, tableName, syncConfig) {
   const primaryKeyColumn = await getPrimaryKeyColumn(tableName);
   const firestoreCollection = collection(db, firestoreCollectionName);
 
@@ -43,37 +44,45 @@ async function syncCollectionToPostgres(firestoreCollectionName, tableName,field
 
     for (const change of snapshot.docChanges()) {
       const docData = change.doc.data();
-      const docId = docData[fields[0]];
+      const docId = docData[syncConfig.fields[0]];
 
       try {
-        const columnValues = fields.map(field => convertValue(docData[field]));
+        const columnValues = syncConfig.fields.map(field => convertValue(docData[field]));
 
         if (change.type === 'removed') {
           await pool.query(`DELETE FROM ${tableName} WHERE ${primaryKeyColumn} = $1`, [docId]);
-          console.log(`Document ${docId} supprimé de PostgreSQL`);
-        } else {
-          const columns = fields.filter(field => field !== fields[0]).join(', ');
-          const values = columnValues
-            .filter((_, index) => fields[index] !== fields[0])
-            .map((_, index) => `$${index + 2}`).join(', ');
-          
+          console.log(`Document ${docId} deleted from PostgreSQL`);
+        } else if (change.type === 'added') {
+          const columns = syncConfig.fields.join(', ');
+          const values = columnValues.map((_, index) => `$${index + 1}`).join(', ');
+
           const query = `
-            INSERT INTO ${tableName} (${primaryKeyColumn}, ${columns})
-            VALUES ($1, ${values})
-            ON CONFLICT (${primaryKeyColumn}) DO UPDATE
-            SET ${fields
-              .filter(field => field !== fields[0])
-              .map(field => `${field} = EXCLUDED.${field}`).join(', ')}
+            INSERT INTO ${tableName} (${columns})
+            VALUES (${values})
+            ON CONFLICT (${primaryKeyColumn}) DO UPDATE SET
+            ${syncConfig.fields.filter(field => field !== primaryKeyColumn)
+              .map((field, index) => `${field} = EXCLUDED.${field}`).join(', ')}
           `;
-          
-          const filteredColumnValues = columnValues
-            .filter((_, index) => fields[index] !== fields[0]);
-          
-          await pool.query(query, [docId, ...filteredColumnValues]);
-          console.log(`Document ${docId} synchronisé avec PostgreSQL`);
+
+          await pool.query(query, columnValues);
+          console.log(`Document ${docId} added to PostgreSQL`);
+        } else if (change.type === 'modified') {
+          const updateFields = syncConfig.fields
+            .filter(field => field !== primaryKeyColumn)
+            .map((field, index) => `${field} = $${index + 2}`)
+            .join(', ');
+
+          const query = `
+            UPDATE ${tableName}
+            SET ${updateFields}
+            WHERE ${primaryKeyColumn} = $1
+          `;
+
+          await pool.query(query, [docId, ...columnValues.filter((_, index) => syncConfig.fields[index] !== primaryKeyColumn)]);
+          console.log(`Document ${docId} updated in PostgreSQL`);
         }
       } catch (error) {
-        console.error(`Erreur lors de la synchronisation Firestore -> PostgreSQL (${tableName}):`, error);
+        console.error(`Error syncing Firestore -> PostgreSQL (${tableName}):`, error);
       }
     }
     isSyncingFromFirestore = false;
@@ -129,14 +138,16 @@ async function listenToPostgresChanges(collectionsAndTables) {
   try {
     await createNotificationFunction(client);
 
-    for (const { tableName } of collectionsAndTables) {
-      await client.query(`
-        DROP TRIGGER IF EXISTS ${tableName}_change_trigger ON ${tableName};
-        
-        CREATE TRIGGER ${tableName}_change_trigger
-        AFTER INSERT OR UPDATE OR DELETE ON ${tableName}
-        FOR EACH ROW EXECUTE FUNCTION notify_data_change();
-      `);
+    for (const { tableName, syncConfig } of collectionsAndTables) {
+      if (syncConfig.syncOperations.update || syncConfig.syncOperations.delete || syncConfig.syncOperations.insert) {
+        await client.query(`
+          DROP TRIGGER IF EXISTS ${tableName}_change_trigger ON ${tableName};
+          
+          CREATE TRIGGER ${tableName}_change_trigger
+          AFTER INSERT OR UPDATE OR DELETE ON ${tableName}
+          FOR EACH ROW EXECUTE FUNCTION notify_data_change();
+        `);
+      }
     }
 
     await client.query('LISTEN data_changes');
@@ -151,7 +162,14 @@ async function listenToPostgresChanges(collectionsAndTables) {
       );
 
       if (!matchingCollection) {
-        console.error(`No matching collection found for table: ${payload.table_name}`);
+        isSyncingFromPostgres = false;
+        return;
+      }
+
+      // Vérifier l'opération en fonction de la configuration
+      const operation = payload.operation.toLowerCase();
+      if (!matchingCollection.syncConfig.syncOperations[operation === 'insert' ? 'insert' : operation === 'update' ? 'update' : 'delete']) {
+        console.log(`Operation ${operation} disabled for ${payload.table_name}, skipping sync to Firestore`);
         isSyncingFromPostgres = false;
         return;
       }
@@ -161,62 +179,157 @@ async function listenToPostgresChanges(collectionsAndTables) {
       try {
         if (payload.operation === 'DELETE') {
           await deleteDoc(docRef);
-          console.log(`Document ${payload.id} supprimé de Firestore`);
+          console.log(`Document ${payload.id} deleted from Firestore`);
         } else {
           const dataToSync = payload.data;
           const syncData = Object.fromEntries(
             Object.entries(dataToSync).filter(([key]) => 
-              matchingCollection.fields.includes(key) && 
-              key !== matchingCollection.fields[0]
+              matchingCollection.syncConfig.fields.includes(key)
             )
           );
 
-          syncData[matchingCollection.fields[0]] = payload.id;
-
           await setDoc(docRef, syncData);
-          console.log(`Document ${payload.id} synchronisé avec Firestore`);
+          console.log(`Document ${payload.id} synced with Firestore (${payload.operation})`);
         }
       } catch (error) {
-        console.error('Erreur lors de la synchronisation PostgreSQL -> Firestore:', error);
+        console.error('Error syncing PostgreSQL -> Firestore:', error);
       }
 
       isSyncingFromPostgres = false;
     });
 
   } catch (error) {
-    console.error('Erreur lors de la configuration des notifications PostgreSQL:', error);
+    console.error('Error configuring PostgreSQL notifications:', error);
     client.release();
   }
 }
 
 const collectionsAndTables = [
-  { firestoreCollectionName: 'users', tableName: 'users', fields: ['id',
-    'user_name', 'user_email', 'user_password', 'user_birthday',
-    'token_last_used_at', 'token_expires_at', 'token',
-    'email_verification_code', 'verification_code_expires_at',
-    'email_verified_at', 'login_attempts', 'last_login_attempt_at',
-    'reset_attempts_token', 'reset_attempts_token_expires_at',
-    'verification_attempts', 'last_verification_attempt_at',
-    'reset_verification_attempts_token', 'reset_verification_attempts_token_expires_at', 'role'
-  ]},
-  { firestoreCollectionName: 'admin_credentials', tableName: 'admin_credentials', fields: ['id','admin_email', 'admin_password', 'token', 'token_expires_at', 'token_last_used_at'] },
-  { firestoreCollectionName: 'commission', tableName: 'commission', fields: ['id','percentage_sell', 'percentage_buy', 'date_reference'] },
-  { firestoreCollectionName: 'crypto', tableName: 'crypto', fields: ['id','label'] },
-  { firestoreCollectionName: 'transactions', tableName: 'transactions', fields: ['id','date_transaction', 'deposit', 'id_user', 'withdrawal', 'validated_at', 'approved_by_admin'] },
-  { firestoreCollectionName: 'crypto_cours', tableName: 'crypto_cours', fields: ['id','id_crypto', 'cours', 'date_cours'] },
-  { firestoreCollectionName: 'crypto_transactions', tableName: 'crypto_transactions', fields: ['id','id_user', 'id_crypto', 'is_sale', 'is_purchase', 'quantity', 'date_transaction'] }
+  { 
+    firestoreCollectionName: 'users', 
+    tableName: 'users', 
+    syncConfig: {
+      fields: ['id', 'user_name', 'user_email', 'user_password', 'user_birthday',
+        'token_last_used_at', 'token_expires_at', 'token',
+        'email_verification_code', 'verification_code_expires_at',
+        'email_verified_at', 'login_attempts', 'last_login_attempt_at',
+        'reset_attempts_token', 'reset_attempts_token_expires_at',
+        'verification_attempts', 'last_verification_attempt_at',
+        'reset_verification_attempts_token', 'reset_verification_attempts_token_expires_at', 'role',
+        'fcm_token'
+      ],
+      syncOperations: { insert: true, update: true, delete: true }
+    }
+  },
+  { 
+    firestoreCollectionName: 'admin_credentials', 
+    tableName: 'admin_credentials', 
+    syncConfig: {
+      fields: ['id', 'admin_email', 'admin_password', 'token', 'token_expires_at', 'token_last_used_at'],
+      syncOperations: { insert: true, update: true, delete: true }
+    }
+  },
+  { 
+    firestoreCollectionName: 'commission', 
+    tableName: 'commission', 
+    syncConfig: {
+      fields: ['id', 'percentage_sell', 'percentage_buy', 'date_reference'],
+      syncOperations: { insert: true, update: true, delete: true }
+    }
+  },
+  { 
+    firestoreCollectionName: 'crypto', 
+    tableName: 'crypto', 
+    syncConfig: {
+      fields: ['id', 'label'],
+      syncOperations: { insert: true, update: true, delete: true }
+    }
+  },
+  { 
+    firestoreCollectionName: 'transactions', 
+    tableName: 'transactions', 
+    syncConfig: {
+      fields: ['id', 'date_transaction', 'deposit', 'id_user', 'withdrawal', 'validated_at', 'approved_by_admin', 'notification_sent', 'notification_seen'],
+      syncOperations: { insert: true, update: true, delete: true }
+    }
+  },
+  { 
+    firestoreCollectionName: 'crypto_cours', 
+    tableName: 'crypto_cours', 
+    syncConfig: {
+      fields: ['id', 'id_crypto', 'cours', 'date_cours'],
+      syncOperations: { insert: true, update: true, delete: true }
+    }
+  },
+  { 
+    firestoreCollectionName: 'crypto_transactions', 
+    tableName: 'crypto_transactions', 
+    syncConfig: {
+      fields: ['id', 'id_user', 'id_crypto', 'is_sale', 'is_purchase', 'quantity', 'date_transaction'],
+      syncOperations: { insert: true, update: true, delete: true }
+    }
+  },
+  { 
+    firestoreCollectionName: 'favori', 
+    tableName: 'favori', 
+    syncConfig: {
+      fields: ['id', 'id_user', 'id_crypto'],
+      syncOperations: { insert: true, update: true, delete: true }
+    }
+  }
 ];
+
+async function deleteFirestoreCollections() {
+  try {
+    for (const { firestoreCollectionName } of collectionsAndTables) {
+      const collectionRef = collection(db, firestoreCollectionName);
+      const snapshot = await getDocs(collectionRef);
+
+      if (!snapshot.empty) {
+        console.log(`Deleting Firestore collection: ${firestoreCollectionName}`);
+        
+        const batch = writeBatch(db); // Correct usage of writeBatch
+        snapshot.docs.forEach(doc => {
+          batch.delete(doc.ref);
+        });
+
+        await batch.commit();
+        console.log(`Firestore collection ${firestoreCollectionName} deleted.`);
+      }
+    }
+  } catch (error) {
+    console.error('Error deleting Firestore collections:', error);
+  }
+}
+
+async function createFirestoreCollections() {
+  try {
+    await deleteFirestoreCollections();
+
+    for (const { firestoreCollectionName } of collectionsAndTables) {
+      const collectionRef = collection(db, firestoreCollectionName);
+      console.log(`Creating Firestore collection: ${firestoreCollectionName}`);
+      // Create the collection without adding a document
+      await collectionRef; // This line is sufficient to create the collection without a document
+      console.log(`Firestore collection ${firestoreCollectionName} created.`);
+    }
+  } catch (error) {
+    console.error('Error creating Firestore collections:', error);
+  }
+}
 
 async function startSync() {
   try {
-    collectionsAndTables.forEach(({ firestoreCollectionName, tableName,fields }) => {
-      syncCollectionToPostgres(firestoreCollectionName, tableName,fields);
+    await createFirestoreCollections();
+
+    collectionsAndTables.forEach(({ firestoreCollectionName, tableName, syncConfig }) => {
+      syncCollectionToPostgres(firestoreCollectionName, tableName, syncConfig);
     });
 
     await listenToPostgresChanges(collectionsAndTables);
-    console.log('Synchronisation bidirectionnelle Firestore-PostgreSQL démarrée...');
+    console.log('Synchronization started with custom operation configuration...');
   } catch (error) {
-    console.error('Erreur lors du démarrage de la synchronisation:', error);
+    console.error('Error starting synchronization:', error);
     process.exit(1);
   }
 }

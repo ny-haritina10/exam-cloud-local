@@ -65,10 +65,21 @@ public class User {
     @Column(name = "reset_verification_attempts_token_expires_at")
     private LocalDateTime resetVerificationAttemptsTokenExpiresAt;
 
-    @Column
+    @Column(name = "role")
     private String role;
 
+    @Column(name = "fcm_token")
+    private String fcmToken;
+
     // Getters and Setters
+    public void setFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
+    }
+
+    public String getFcmToken() {
+        return fcmToken;
+    }
+
     public Long getId() {
         return id;
     }

@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder
         DB::table('admin_credentials')->insert([
             'id' => 1,
             'admin_email' => 'admin@gmail.com',
-            'admin_password' => Hash::make('admin')
+            'admin_password' => 'admin'
         ]);
 
         DB::table('commission')->insert([
@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
                 'id' => 1,
                 'user_name' => 'Lidia',
                 'user_email' => 'lidia.client@gmail.com',
-                'user_password' => Hash::make('mdp123'),
+                'user_password' => 'mdp123',
                 'user_birthday' => '1985-06-15',
                 'email_verified_at' => '2025-01-10 15:30:00',
                 'role' => 'CLIENT'
@@ -39,7 +39,7 @@ class DatabaseSeeder extends Seeder
                 'id' => 2,
                 'user_name' => 'John Doe',
                 'user_email' => 'john.doe@gmail.com',
-                'user_password' => Hash::make('securepassword1'),
+                'user_password' => 'securepassword1',
                 'user_birthday' => '1990-08-25',
                 'email_verified_at' => '2025-01-09 10:00:00',
                 'role' => 'CLIENT'
@@ -48,7 +48,7 @@ class DatabaseSeeder extends Seeder
                 'id' => 3,
                 'user_name' => 'Jane Smith',
                 'user_email' => 'jane.smith@gmail.com',
-                'user_password' => Hash::make('securepassword2'),
+                'user_password' => 'securepassword2',
                 'user_birthday' => '1990-08-25',
                 'email_verified_at' => '2025-01-09 10:00:00',
                 'role' => 'CLIENT'
@@ -57,7 +57,7 @@ class DatabaseSeeder extends Seeder
                 'id' => 4,
                 'user_name' => 'Alice Cooper',
                 'user_email' => 'alice.cooper@gmail.com',
-                'user_password' => Hash::make('password1'),
+                'user_password' => 'password1',
                 'user_birthday' => '1990-08-25',
                 'email_verified_at' => '2025-01-09 10:00:00',
                 'role' => 'CLIENT'
@@ -66,7 +66,7 @@ class DatabaseSeeder extends Seeder
                 'id' => 5,
                 'user_name' => 'Bob Marley',
                 'user_email' => 'bob.marley@gmail.com',
-                'user_password' => Hash::make('password2'),
+                'user_password' => 'password2',
                 'user_birthday' => '1990-08-25',
                 'email_verified_at' => '2025-01-09 10:00:00',
                 'role' => 'CLIENT'
@@ -75,7 +75,7 @@ class DatabaseSeeder extends Seeder
                 'id' => 6,
                 'user_name' => 'Charlie Brown',
                 'user_email' => 'charlie.brown@gmail.com',
-                'user_password' => Hash::make('password3'),
+                'user_password' => 'password3',
                 'user_birthday' => '1990-08-25',
                 'email_verified_at' => '2025-01-09 10:00:00',
                 'role' => 'CLIENT'
@@ -84,7 +84,7 @@ class DatabaseSeeder extends Seeder
                 'id' => 7,
                 'user_name' => 'Diana Prince',
                 'user_email' => 'diana.prince@gmail.com',
-                'user_password' => Hash::make('password4'),
+                'user_password' => 'password4',
                 'user_birthday' => '1990-08-25',
                 'email_verified_at' => '2025-01-09 10:00:00',
                 'role' => 'CLIENT'
@@ -102,7 +102,7 @@ class DatabaseSeeder extends Seeder
                 'id' => 9,
                 'user_name' => 'Frank Sinatra',
                 'user_email' => 'frank.sinatra@gmail.com',
-                'user_password' => Hash::make('password6'),
+                'user_password' => 'password6',
                 'user_birthday' => '1990-08-25',
                 'email_verified_at' => '2025-01-09 10:00:00',
                 'role' => 'CLIENT'
@@ -111,7 +111,7 @@ class DatabaseSeeder extends Seeder
                 'id' => 10,
                 'user_name' => 'Grace Hopper',
                 'user_email' => 'grace.hopper@gmail.com',
-                'user_password' => Hash::make('password7'),
+                'user_password' => 'password7',
                 'user_birthday' => '1990-08-25',
                 'email_verified_at' => '2025-01-09 10:00:00',
                 'role' => 'CLIENT'

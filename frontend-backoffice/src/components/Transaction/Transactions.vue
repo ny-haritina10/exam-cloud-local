@@ -1,4 +1,4 @@
-<template>
+<template> 
   <div class="container mt-4">
     <div class="card shadow-lg rounded">
       <!-- Card Header -->
@@ -30,7 +30,6 @@
         <table v-if="transactions.length > 0" class="table table-hover table-bordered text-center">
           <thead class="table-dark">
             <tr>
-              <th>ID</th>
               <th>User ID</th>
               <th>Deposit</th>
               <th>Withdrawal</th>
@@ -42,7 +41,6 @@
           </thead>
           <tbody>
             <tr v-for="transaction in transactions" :key="transaction.id">
-              <td>{{ transaction.id }}</td>
               <td>{{ transaction.userId }}</td>
               <td class="text-success fw-bold">
                 <i class="fas fa-arrow-up"></i> ${{ transaction.deposit.toFixed(2) }}
@@ -63,7 +61,7 @@
                 {{ transaction.validatedAt ? formatDate(transaction.validatedAt) : 'Not validated' }}
               </td>
               <td>
-                <button v-if="!transaction.approvedByAdmin" @click="validateTransaction(transaction.id)" 
+                <button v-if="!transaction.approvedByAdmin" @click="validateTransaction(transaction.id, transaction.userId)" 
                   class="btn btn-sm btn-primary">
                   <i class="fas fa-check"></i> Validate
                 </button>
@@ -109,15 +107,33 @@ export default {
     formatDate(dateString) {
       return new Date(dateString).toLocaleString();
     },
-    async validateTransaction(transactionId) {
+    async validateTransaction(transactionId, userId) {
       try {
+        // Validate transaction
         const response = await axios.get(`http://localhost:8099/front-office/api/transactions/validate?transactionId=${transactionId}&adminId=${this.adminId}`);
         const updatedTransaction = response.data.data;
         this.transactions = this.transactions.map(transaction =>
           transaction.id === updatedTransaction.id ? updatedTransaction : transaction
         );
+
+        // Send notification after validation
+        await this.sendNotification(userId, transactionId);
+
       } catch (error) {
         this.error = "Failed to validate transaction. Please try again.";
+      }
+    },
+    async sendNotification(userId, transactionId) {
+      console.log('notifications');
+      try {
+        await axios.post('http://localhost:3000/notify', {
+          userId,
+          transactionId,
+        });
+        console.log("Notification sent successfully.");
+      } catch (error) {
+        console.error("Error sending notification:", error);
+        this.error = "Failed to send notification. Please try again.";
       }
     }
   },
