@@ -176,7 +176,7 @@ export default {
           handler(newValue) {
               this.formData.isSale = newValue === 'sale';
               this.formData.isPurchase = newValue === 'purchase';
-              this.fetchCryptos(); // Refetch based on the transaction type
+              this.fetchCryptos(); 
           },
           immediate: true
       }

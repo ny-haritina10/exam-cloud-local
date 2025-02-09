@@ -34,15 +34,15 @@ export default {
       isSidebarCollapsed: false,
       menuItems: [
         { path: "/dashboard", label: "Home", icon: "fas fa-home" },
-        { path: "/dashboard/commission", label: "Commission", icon: "fas fa-percentage" },
         { path: "/dashboard/balance", label: "Wallet", icon: "fas fa-wallet" },
+        { path: "/dashboard/commission", label: "Commission", icon: "fas fa-percentage" },
         { path: "/dashboard/crypto-prices", label: "Crypto Prices", icon: "fas fa-chart-bar" },
         { path: "/dashboard/transaction", label: "Cash Transaction", icon: "fas fa-exchange-alt" },
+        { path: "/dashboard/user_transaction", label: "Transaction User", icon: "fas fa-user-alt" },
         { path: "/dashboard/crypto-transaction", label: "Crypto Transaction", icon: "fas fa-coins" },
-        { path: "/dashboard/crypto-transactions-list", label: "Crypto Transaction History", icon: "fas fa-history" },
         { path: "/dashboard/crypto_analysis", label: "Analyse Crypto Price", icon: "fas fa-chart-line" },
         { path: "/dashboard/transaction_commission", label: "Analyse Commission", icon: "fas fa-file-invoice-dollar" },
-        { path: "/dashboard/user_transaction", label: "Transaction User", icon: "fas fa-user-alt" },
+        { path: "/dashboard/crypto-transactions-list", label: "Crypto Transaction History", icon: "fas fa-history" },
       ],
     };
   },
@@ -56,11 +56,17 @@ export default {
 
 <style scoped>
 .sidebar {
-  width: 250px;
+  width: 200px;
+  height: 100vh;
+  position: sticky; /* Add this */
+  top: 0; /* Add this */
   transition: width 0.3s ease;
   display: flex;
   flex-direction: column;
   background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex-shrink: 0; /* Add this to prevent sidebar from shrinking */
 }
 
 .sidebar.collapsed {
@@ -82,6 +88,8 @@ export default {
   padding: 10px;
   border-radius: 8px;
   transition: all 0.2s ease;
+  width: 100%; /* Ensure the link takes the full width */
+  text-decoration: none; /* Optional: Remove underline if any */
 }
 
 .nav-link i {
@@ -93,6 +101,10 @@ export default {
 .nav-link span {
   white-space: nowrap;
   font-size: 1rem;
+}
+
+.nav-item {
+  width: 100%; /* Ensure nav items take full width */
 }
 
 .nav-link:hover {
@@ -151,6 +163,6 @@ export default {
 }
 
 .sidebar.collapsed {
-  width: 70px;
+  width: 100px;
 }
 </style>

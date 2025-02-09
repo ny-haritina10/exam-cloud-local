@@ -7,7 +7,7 @@
     <div class="content-container">
       <!-- Header -->
       <header class="navbar navbar-dark bg-dark px-4">
-        <span class="navbar-brand mb-0 h4">Welcome to the Back-Office</span>
+        <span class="navbar-brand mb-0 h4">Welcome to the Crypto App</span>
         <button class="btn btn-outline-light" @click="logout">
           <i class="fas fa-sign-out-alt me-2"></i> Logout
         </button>

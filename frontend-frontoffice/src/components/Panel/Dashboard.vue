@@ -132,19 +132,20 @@ export default {
 <style scoped>
 .dashboard-container {
   display: flex;
-  min-height: 100vh;
+  height: 100vh; /* Changed from min-height to height */
+  overflow: hidden; /* Add this to prevent overall scrolling */
 }
-
 
 .main-content {
   display: flex;
   flex-direction: column;
-  flex-grow: 1; 
-  min-height: 100vh; 
+  flex-grow: 1;
+  height: 100vh; /* Changed from min-height to height */
+  overflow-y: auto; /* This allows main content to scroll independently */
 }
 
 .content {
-  flex-grow: 1; 
+  flex-grow: 1;
   background-color: #f8f9fa;
 }
 

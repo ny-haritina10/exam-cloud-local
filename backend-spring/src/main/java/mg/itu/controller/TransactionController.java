@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import mg.itu.service.FirebaseService;
 import mg.itu.service.TransactionService;
 import mg.itu.model.Transaction;
 import mg.itu.dto.ApiResponse;
@@ -18,6 +19,10 @@ public class TransactionController {
     @Autowired
     private TransactionService service;
 
+    @Autowired
+    private FirebaseService firebaseService;
+
+
     @PostMapping
     public ResponseEntity<ApiResponse<Transaction>> createTransaction(@RequestBody Transaction transaction) {
         Transaction savedTransaction = service.saveTransaction(transaction);
@@ -31,6 +36,28 @@ public class TransactionController {
             @RequestParam Long adminId) 
     {
         Transaction validatedTransaction = service.approveTransaction(transactionId, adminId);
+        
+        // Send notification after validation
+        try {
+            String userId = validatedTransaction.getUserId().toString(); 
+            String fcmToken = firebaseService.getUserFcmToken(userId);
+            
+            if (fcmToken != null) {
+
+                if (validatedTransaction.getDeposit() != 0) {
+                    firebaseService.sendNotification(fcmToken, "Transaction Approved", "Your deposit of " + validatedTransaction.getDeposit() + "$ has been successfully validated.");
+                }
+
+                else {
+                    firebaseService.sendNotification(fcmToken, "Transaction Approved", "Your withdrawal of " + validatedTransaction.getWithdrawal() + "$ has been successfully validated.");
+                }
+            }
+        } 
+        
+        catch (Exception e) {
+            System.err.println("Failed to send notification: " + e.getMessage());
+        }
+    
         ApiResponse<Transaction> response = new ApiResponse<>(
             "success",
             "Transaction validated successfully",
@@ -38,7 +65,7 @@ public class TransactionController {
         );
         
         return ResponseEntity.ok(response);
-    }
+    }    
 
     @GetMapping("/all")
     public ResponseEntity<ApiResponse<List<Transaction>>> getAllTransactions() {

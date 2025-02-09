@@ -32,4 +32,8 @@ public class CryptoTransactionService {
     public List<Crypto> getUserCryptoHoldings(Long userId) {
         return transactionRepository.findUserHoldings(userId); 
     }
+
+    public List<Long> getUsersWhoFavorited(Long cryptoId) {
+        return jdbcTemplate.queryForList("SELECT id_user FROM favori WHERE id_crypto = ?", Long.class, cryptoId);
+    }
 }

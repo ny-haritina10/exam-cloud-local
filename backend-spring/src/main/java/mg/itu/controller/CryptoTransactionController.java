@@ -8,6 +8,7 @@ import mg.itu.model.CryptoTransaction;
 import mg.itu.service.CryptoCoursService;
 import mg.itu.service.CryptoPurchaseSaleService;
 import mg.itu.service.CryptoTransactionService;
+import mg.itu.service.FirebaseService;
 import mg.itu.service.CryptoService;
 
 import java.math.BigDecimal;
@@ -34,8 +35,13 @@ public class CryptoTransactionController {
     @Autowired
     private CryptoCoursService cryptoCoursService;
 
+    @Autowired
+    private FirebaseService firebaseService;
+
     @PostMapping
-    public ResponseEntity<?> handleCryptoTransaction(@RequestBody CryptoTransaction transaction) {
+    public ResponseEntity<?> handleCryptoTransaction(@RequestBody CryptoTransaction transaction) 
+        throws Exception
+    {
         if (transaction.getCrypto() == null || transaction.getCrypto().getId() == null) {
             return ResponseEntity.badRequest().body(new ApiResponse<>(
                     "error",
@@ -74,7 +80,8 @@ public class CryptoTransactionController {
             ));
         }
 
-        if (transaction.getIsSale() && transaction.getQuantity() * currentCryptoCour.doubleValue() > userSolde) {
+        // if it's a purchase, check user balance account
+        if (transaction.getIsPurchase() && transaction.getQuantity() * currentCryptoCour.doubleValue() > userSolde) {
             return ResponseEntity.badRequest().body(new ApiResponse<>(
                     "error",
                     "Insufficient balance for this transaction",
@@ -84,6 +91,21 @@ public class CryptoTransactionController {
 
         // Save the transaction
         CryptoTransaction savedTransaction = transactionService.saveTransaction(transaction);
+
+        // Check if the crypto is in any user's favorites
+        List<Long> favoritedUsers = transactionService.getUsersWhoFavorited(transaction.getCrypto().getId());   
+
+        if (!favoritedUsers.isEmpty()) {
+            String notificationMessage = crypto.getLabel() + " has been " +
+                    (transaction.getIsSale() ? "sold" : "purchased") + " with a quantity of " + transaction.getQuantity();
+
+            for (Long userId : favoritedUsers) {
+                String fcmToken = firebaseService.getUserFcmToken(userId.toString());
+
+                firebaseService.sendNotification(fcmToken, "Favori Operations", notificationMessage);
+            }
+        }
+
         return ResponseEntity.ok(new ApiResponse<>(
                 "success",
                 "Crypto transaction processed successfully",

@@ -54,7 +54,7 @@
           <table class="table table-hover">
             <thead class="table-dark">
               <tr>
-                <th><i class="fas fa-user me-1"></i> User ID</th>
+                <th><i class="fas fa-user me-1"></i> User</th>
                 <th><i class="fas fa-user-circle me-1"></i> User Name</th>
                 <th><i class="fas fa-coins me-1"></i> Cryptocurrency</th>
                 <th><i class="fas fa-calculator me-1"></i> Quantity</th>
@@ -64,7 +64,17 @@
             </thead>
             <tbody>
               <tr v-for="(transaction, index) in filteredTransactions" :key="index" @click="filterByUser(transaction.userName)">
-                <td>{{ transaction.userId }}</td>
+                <td class="user-cell">
+                  <div class="user-avatar">
+                    <img 
+                      :src="transaction.userImageUrl || defaultImageUrl"
+                      :alt="transaction.userName"
+                      @error="handleImageError"
+                      class="user-image"
+                    />
+                  </div>
+                  {{ transaction.userId }}
+                </td>
                 <td>{{ transaction.userName }}</td>
                 <td><span class="fw-medium">{{ transaction.cryptoLabel }}</span></td>
                 <td>
@@ -90,6 +100,7 @@
 
 <script>
 import axios from 'axios';
+import defaultUserImage from '@/assets/default-user.png'
 
 export default {
   name: 'CryptoTransactionsList',
@@ -101,8 +112,11 @@ export default {
       error: null,
       selectedUser: '',
       selectedCrypto: '',
+      defaultImageUrl: defaultUserImage,
+      userImages: new Map(), 
     };
   },
+
   computed: {
     uniqueUsers() {
       return [...new Set(this.transactions.map(t => t.userName))].sort();
@@ -111,13 +125,63 @@ export default {
       return [...new Set(this.transactions.map(t => t.cryptoLabel))].sort();
     }
   },
+
   methods: {
+    async fetchUserImage(userId) {
+      // Check cache first
+      if (this.userImages.has(userId)) {
+        return this.userImages.get(userId);
+      }
+
+      try {
+        // Call your backend endpoint to get the user's image
+        const response = await axios.get(`http://localhost:8099/front-office/api/users/${userId}/profile-image`);
+        
+        if (response.data && response.data.imageUrl) {
+          // Cache the image URL
+          this.userImages.set(userId, response.data.imageUrl);
+          return response.data.imageUrl;
+        }
+        return null;
+      } catch (error) {
+        console.error(`Error fetching image for user ${userId}:`, error);
+        return null;
+      }
+    },
+
+    async fetchTransactions() {
+      this.loading = true;
+      this.error = null;
+
+      try {
+        // Fetch transactions
+        const response = await axios.get('http://localhost:8099/front-office/api/crypto-transactions/all');
+        this.transactions = response.data;
+
+        // Fetch images for all transactions
+        await Promise.all(
+          this.transactions.map(async (transaction) => {
+            transaction.userImageUrl = await this.fetchUserImage(transaction.userId);
+            return transaction;
+          })
+        );
+
+        this.filteredTransactions = [...this.transactions];
+      } catch (error) {
+        this.error = 'Failed to load transactions. Please try again later.';
+        console.error('Error fetching transactions:', error);
+      } finally {
+        this.loading = false;
+      }
+    },
+
     formatQuantity(value) {
       return new Intl.NumberFormat('en-US', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 6
       }).format(value);
     },
+
     formatDate(date) {
       return new Date(date).toLocaleString('en-US', {
         year: 'numeric',
@@ -128,21 +192,11 @@ export default {
         second: '2-digit'
       });
     },
-    async fetchTransactions() {
-      this.loading = true;
-      this.error = null;
 
-      try {
-        const response = await axios.get('http://localhost:8099/front-office/api/crypto-transactions/all');
-        this.transactions = response.data;
-        this.filteredTransactions = [...this.transactions]; // Initialize filtered data
-      } catch (error) {
-        this.error = 'Failed to load transactions. Please try again later.';
-        console.error('Error fetching transactions:', error);
-      } finally {
-        this.loading = false;
-      }
+    handleImageError(event) {
+      event.target.src = this.defaultImageUrl;
     },
+
     applyFilters() {
       this.filteredTransactions = this.transactions.filter(transaction => {
         return (
@@ -151,14 +205,19 @@ export default {
         );
       });
     },
+
     filterByUser(userName) {
       this.selectedUser = userName;
       this.applyFilters();
     },
+
     refreshTransactions() {
+      // Clear image cache on refresh
+      this.userImages.clear();
       this.fetchTransactions();
     }
   },
+
   created() {
     this.fetchTransactions();
   }
@@ -166,13 +225,11 @@ export default {
 </script>
 
 <style scoped>
-/* Card */
 .card {
   border-radius: 12px;
   overflow: hidden;
 }
 
-/* Table */
 .table {
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -184,7 +241,6 @@ export default {
   cursor: pointer;
 }
 
-/* Filters */
 .form-select {
   border-radius: 8px;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
@@ -196,12 +252,33 @@ export default {
   box-shadow: 0px 0px 5px rgba(108, 117, 125, 0.5);
 }
 
-/* Buttons */
 .btn {
   transition: all 0.3s ease-in-out;
 }
 
 .btn:hover:not(:disabled) {
   transform: scale(1.05);
+}
+
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #103a8e;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.user-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 </style>

@@ -25,6 +25,7 @@
                     v-model="formData.email"
                     :class="{ 'is-invalid': errors.email }"
                     placeholder="name@example.com"
+                    value="admin@gmail.com"
                     required
                   >
                   <label for="email">
@@ -43,6 +44,7 @@
                     v-model="formData.password"
                     :class="{ 'is-invalid': errors.password }"
                     placeholder="Password"
+                    value="admin"
                     required
                   >
                   <label for="password">

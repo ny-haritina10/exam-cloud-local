@@ -1,7 +1,7 @@
 <template> 
   <div class="container mt-4">
     <div class="card shadow-lg rounded">
-      <!-- Card Header -->
+      <!-- Card Header stays the same -->
       <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-3 px-4">
         <h4 class="mb-0">
           <i class="fas fa-wallet me-2"></i> Transactions
@@ -18,30 +18,49 @@
 
       <!-- Card Body -->
       <div class="card-body">
+        <!-- Loading State -->
         <div v-if="loading" class="text-center my-4">
           <i class="fas fa-spinner fa-spin fa-2x text-primary"></i>
           <p>Loading transactions...</p>
         </div>
 
-        <div v-if="error" class="alert alert-danger">
+        <!-- Error State -->
+        <div v-else-if="error" class="alert alert-danger">
           <i class="fas fa-exclamation-triangle me-2"></i> {{ error }}
         </div>
 
-        <table v-if="transactions.length > 0" class="table table-hover table-bordered text-center">
+        <!-- Empty State -->
+        <div v-else-if="transactions.length === 0" class="text-center my-4">
+          <i class="fas fa-box-open fa-2x text-muted"></i>
+          <p>No transactions found.</p>
+        </div>
+
+        <!-- Table State - Only show when not loading, no error, and has data -->
+        <table v-else class="table table-hover table-bordered text-center">
           <thead class="table-dark">
             <tr>
-              <th>User ID</th>
-              <th>Deposit</th>
-              <th>Withdrawal</th>
-              <th>Date</th>
-              <th>Status</th>
-              <th>Validated At</th>
-              <th>Actions</th>
+              <th><i class="fas fa-user me-1"></i> User ID</th> 
+              <th><i class="fas fa-calculator me-1"></i>Deposit</th>
+              <th><i class="fas fa-calculator me-1"></i>Withdrawal</th>
+              <th><i class="fas fa-calendar-alt me-1"></i>Date</th>
+              <th><i class="fas fa-tasks me-1"></i> Status</th>
+              <th><i class="fas fa-check-circle me-1"></i> Validated At</th>
+              <th><i class="fas fa-cogs me-1"></i> Actions</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="transaction in transactions" :key="transaction.id">
-              <td>{{ transaction.userId }}</td>
+              <td class="user-cell">
+                <div class="user-avatar">
+                  <img 
+                    :src="transaction.userImageUrl || defaultImageUrl"
+                    :alt="'User ' + transaction.userId"
+                    @error="handleImageError"
+                    class="user-image"
+                  />
+                </div>
+                {{ transaction.userId }}
+              </td>
               <td class="text-success fw-bold">
                 <i class="fas fa-arrow-up"></i> ${{ transaction.deposit.toFixed(2) }}
               </td>
@@ -69,11 +88,6 @@
             </tr>
           </tbody>
         </table>
-
-        <div v-else-if="!loading && transactions.length === 0" class="text-center my-4">
-          <i class="fas fa-box-open fa-2x text-muted"></i>
-          <p>No transactions found.</p>
-        </div>
       </div>
     </div>
   </div>
@@ -81,6 +95,7 @@
 
 <script>
 import axios from 'axios';
+import defaultUserImage from '@/assets/default-user.png';
 
 export default {
   data() {
@@ -89,15 +104,58 @@ export default {
       loading: true,
       error: null,
       adminId: localStorage.getItem('id_admin'),
+      defaultImageUrl: defaultUserImage,
+      userImages: new Map(),
     };
   },
   methods: {
+    async fetchUserImage(userId) {
+      if (this.userImages.has(userId)) {
+        return this.userImages.get(userId);
+      }
+
+      try {
+        const response = await axios.get(`http://localhost:8099/front-office/api/users/${userId}/profile-image`);
+        
+        if (response.data && response.data.imageUrl) {
+          this.userImages.set(userId, response.data.imageUrl);
+          return response.data.imageUrl;
+        }
+        return null;
+      } catch (error) {
+        console.error(`Error fetching image for user ${userId}:`, error);
+        return null;
+      }
+    },
+    handleImageError(event) {
+      event.target.src = this.defaultImageUrl;
+    },
+    async validateTransaction(transactionId, userId) {
+      try {
+        const response = await axios.get(`http://localhost:8099/front-office/api/transactions/validate`, {
+          params: { transactionId, adminId: this.adminId }
+        });
+        
+        alert("Transaction validated successfully! The user will be notified.");
+        this.fetchTransactions(); 
+      } catch (error) {
+        alert("Error validating transaction. Please try again.");
+      }
+    },
     async fetchTransactions() {
       this.loading = true;
       this.error = null;
       try {
         const response = await axios.get('http://localhost:8099/front-office/api/transactions/all');
         this.transactions = response.data.data || [];
+        
+        // Fetch images for all transactions
+        await Promise.all(
+          this.transactions.map(async (transaction) => {
+            transaction.userImageUrl = await this.fetchUserImage(transaction.userId);
+            return transaction;
+          })
+        );
       } catch (err) {
         this.error = "Failed to load transactions. Please try again later.";
       } finally {
@@ -106,35 +164,6 @@ export default {
     },
     formatDate(dateString) {
       return new Date(dateString).toLocaleString();
-    },
-    async validateTransaction(transactionId, userId) {
-      try {
-        // Validate transaction
-        const response = await axios.get(`http://localhost:8099/front-office/api/transactions/validate?transactionId=${transactionId}&adminId=${this.adminId}`);
-        const updatedTransaction = response.data.data;
-        this.transactions = this.transactions.map(transaction =>
-          transaction.id === updatedTransaction.id ? updatedTransaction : transaction
-        );
-
-        // Send notification after validation
-        await this.sendNotification(userId, transactionId);
-
-      } catch (error) {
-        this.error = "Failed to validate transaction. Please try again.";
-      }
-    },
-    async sendNotification(userId, transactionId) {
-      console.log('notifications');
-      try {
-        await axios.post('http://localhost:3000/notify', {
-          userId,
-          transactionId,
-        });
-        console.log("Notification sent successfully.");
-      } catch (error) {
-        console.error("Error sending notification:", error);
-        this.error = "Failed to send notification. Please try again.";
-      }
     }
   },
   mounted() {
@@ -144,6 +173,28 @@ export default {
 </script>
 
 <style scoped>
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #103a8e;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.user-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 /* Card */
 .card {
   border-radius: 12px;
